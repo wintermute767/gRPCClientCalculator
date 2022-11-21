@@ -11,21 +11,24 @@ import (
 func main() {
 	for {
 		//читаем построчно команды
-		reader, err := bufio.NewReader(os.Stdin).ReadString('\n')
-		if err != nil {
-			log.Printf("can not read: %s\n", err)
-		} else {
-			//ищем параметры
-			ipAddres, par1, par2, err := requestparameters.GetRequestParameters(reader)
+		reader := bufio.NewReader(os.Stdin)
+		if reader != nil {
+			newstring, err := reader.ReadString('\n')
 			if err != nil {
 				log.Printf("can not read: %s\n", err)
-				continue
+
+				//ищем параметры
+				ipAddres, par1, par2, err := requestparameters.GetRequestParameters(newstring)
+				if err != nil {
+					log.Printf("can not read: %s\n", err)
+					continue
+				}
+				//Делаепм запрос на gRPC сервер
+				answerfromserv.GetAnswerFromServer(ipAddres, par1, par2)
+
 			}
-			//Делаепм запрос на gRPC сервер
-			answerfromserv.GetAnswerFromServer(ipAddres, par1, par2)
 
 		}
 
 	}
-
 }
